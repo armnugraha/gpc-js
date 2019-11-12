@@ -1,0 +1,125 @@
+<!--*
+    *
+    * @Author Arman Nugraha && Faishal Ghani
+    * 3-11-19
+    *
+    *-->
+
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Algoritma Brute Force</title>
+
+    <style type="text/css">
+        #container {
+            min-width: 310px;
+            max-width: 800px;
+            height: 400px;
+            margin: 0 auto
+        }
+    </style>
+
+</head>
+<body>
+
+    <input type="number" name="x1" id="x1" placeholder="x1">
+    <input type="number" name="x2" id="x2" placeholder="x2">
+    <input type="number" name="y1" id="y1" placeholder="y1">
+    <input type="number" name="y2" id="y2" placeholder="y2">
+
+    <button onclick="calculate();">Hitung</button>
+
+    <div id="container"></div>
+
+    <!-- call cdn highchart -->
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+
+    <!-- backend algoritma brute force -->
+    <script type="text/javascript">
+        function calculate(){
+
+            var x1 = Number(document.getElementById("x1").value)
+            var y1 = Number(document.getElementById("y1").value)
+            var x2 = Number(document.getElementById("x2").value)
+            var y2 = Number(document.getElementById("y2").value)
+            var titik = [];
+
+            // 1
+            if (x1 == x2) {
+                var y = 1
+                titik.push([x1, y])
+            }
+
+            // 2
+            if (y1 == y2) {
+                var x = 1
+                titik.push([x, y1])
+            }
+
+            // 3
+            if (x1 != x2 && y1 != y2) {
+                calculateM(x1,y1,x2,y2)
+            }
+
+            // 4
+            function calculateM(x1,y1,x2,y2){
+                var calcM = (y2-y1)/(x2-x1)
+                calculateN(x1,x2,y1,calcM)
+            }
+
+            // 5
+            function calculateN(x1,x2,y1,calcM){
+                var calcN = (x2-x1)+1
+                loopN(x1,y1,calcM,calcN)
+            }
+
+            // 7
+            function loopN(x1,y1,calcM,calcN){
+                var getX = x1
+
+                for (var i = 0; i <= calcN-1; i++) {
+
+                  var y = calcM*(getX-x1)+y1
+
+                  var round = Math.round(y)
+
+                  titik.push([getX, round])
+
+                  getX = getX+1
+
+                }
+            }
+
+            generateChart()
+
+            function generateChart(){
+                Highcharts.chart('container', {
+                    exporting: { enabled: false },
+                    credits: {
+                        enabled: false
+                    },
+                    title: {
+                        text: 'Algoritma Brute Force'
+                    },
+                    xAxis: {
+                        title: {
+                            text: 'X'
+                        }
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Y'
+                        }
+                    },
+                    series: [{
+                        name: 'Graph',
+                        data: titik
+                    }],
+                });
+            }
+        }
+    </script>
+
+</body>
+</html>

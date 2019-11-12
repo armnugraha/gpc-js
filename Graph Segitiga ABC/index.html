@@ -1,0 +1,378 @@
+<!--*
+    *
+    * @Author Arman Nugraha && Faishal Ghani
+    * 3-11-19
+    *
+    *-->
+
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Graph Segitiga ABC</title>
+
+    <style type="text/css">
+        #container {
+            min-width: 310px;
+            max-width: 800px;
+            height: 400px;
+            margin: 0 auto
+        }
+
+        #skala {
+            min-width: 310px;
+            max-width: 800px;
+            height: 400px;
+            margin: 0 auto
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        /* Create three equal columns that floats next to each other */
+        .column {
+            float: left;
+            width: 33.33%;
+            padding: 10px;
+            height: 300px; /* Should be removed. Only for demonstration */
+        }
+
+        /* Clear floats after the columns */
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+    </style>
+
+</head>
+<body>
+
+    <table>
+        <th>
+            <tr>
+                <td>Pergeseran</td>
+            </tr>
+        </th>
+        <tr>
+            <td>A</td>
+            <td>=</td>
+            <td><input type="number" name="a1" size="3"></td>
+            <td><input type="number" name="a2" size="3"></td>
+        </tr>
+        <tr>
+            <td>B</td>
+            <td>=</td>
+            <td><input type="number" name="b1" size="3"></td>
+            <td><input type="number" name="b2" size="3"></td>
+        </tr>
+        <tr>
+            <td>C</td>
+            <td>=</td>
+            <td><input type="number" name="c1" size="3"></td>
+            <td><input type="number" name="c2" size="3"></td>
+        </tr>
+        <tr>
+            <td>tx, ty</td>
+            <td>=</td>
+            <td><input type="number" name="tx" size="3"></td>
+            <td><input type="number" name="ty" size="3"></td>
+        </tr>
+
+        <th><tr><td></td></tr></th>
+
+        <th>
+            <tr>
+                <td>Penskalaan</td>
+            </tr>
+        </th>
+
+        <tr>
+            <td>sx, sy</td>
+            <td>=</td>
+            <td><input type="number" name="sx" size="3"></td>
+            <td><input type="number" name="sy" size="3"></td>
+        </tr>
+
+        <th><tr><td></td></tr></th>
+
+        <th>
+            <tr>
+                <td>Rotasi</td>
+            </tr>
+        </th>
+
+        <tr>
+            <td>Nilai Rotasi</td>
+            <td>=</td>
+            <td><input type="number" name="n_rotasi" size="3"></td>
+            <td>Arah Jarum Jam</td>
+            <td><input type="checkbox" name="arah_jam" checked="" id="arah_jam"></td>
+        </tr>
+
+    </table>
+
+    <button onclick="calcPergeseran();">Hitung</button>
+
+
+    <div class="row">
+        <div id="container" class="column"></div>
+        <div id="skala" class="column"></div>
+        <div id="rotasi" class="column"></div>
+    </div>
+
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.1.4/math.min.js"></script>
+
+    <script type="text/javascript">
+
+        function calcPergeseran(){
+
+            /*
+             *Panggil value dari inputan
+             *
+             */
+            var matrix = [[1, 0], [0, 1]], //default value for matrik
+                a = [[Number(document.getElementsByName("a1")[0].value)],[Number(document.getElementsByName("a2")[0].value)]], //example [[20], [20]]
+                b = [[Number(document.getElementsByName("b1")[0].value)],[Number(document.getElementsByName("b2")[0].value)]], //example [[100], [20]]
+                c = [[Number(document.getElementsByName("c1")[0].value)],[Number(document.getElementsByName("c2")[0].value)]], //example [[60], [120]]
+                tXY = [[Number(document.getElementsByName("tx")[0].value)],[Number(document.getElementsByName("ty")[0].value)]]; //example [[80], [70]]
+
+            /*
+             *Panggil value dari inputan
+             *
+             */
+            // Simulate Pergeseran
+            var getA = multiply(matrix, a)
+            var dataA = multiplyPlus(getA, tXY)
+
+            var getB = multiply(matrix, b)
+            var dataB = multiplyPlus(getB, tXY)
+
+            var getC = multiply(matrix, c)
+            var dataC = multiplyPlus(getC, tXY)
+
+            // Start Pecah
+            var dataAResult = []
+            dataAResult.push(dataA[0][0])
+            dataAResult.push(dataA[1][0])
+
+            var dataBResult = []
+            dataBResult.push(dataB[0][0])
+            dataBResult.push(dataB[1][0])
+
+            var dataCResult = []
+            dataCResult.push(dataC[0][0])
+            dataCResult.push(dataC[1][0])
+            // End Pecah
+
+            var resultPergeseran = []
+            resultPergeseran.push(dataAResult)
+            resultPergeseran.push(dataBResult)
+            resultPergeseran.push(dataCResult)
+            resultPergeseran.push(dataAResult)
+
+            generateChart()
+
+            function generateChart(){
+                Highcharts.chart('container', {
+                    exporting: {enabled: false},
+                    credits: {enabled: false},
+                    title: {text: 'Pergeseran'},
+                    xAxis: {
+                        title: {text: 'X'}
+                    },
+                    yAxis: {
+                        title: {text: 'Y'}
+                    },
+                    series: [{
+                        name: 'A',
+                        data: resultPergeseran
+                    }],
+                });
+            }
+            // End Pergeseran
+
+
+            // Simulate Penskalaan
+            // Input Penskalaan
+            var matrixXY = [[Number(document.getElementsByName("sx")[0].value), 0],[0, Number(document.getElementsByName("sy")[0].value)]]; //[[4, 0], [0, 2]]
+
+            // Start Calculate
+            var getAPenskalaan = multiply(matrixXY, a)
+
+            var getBPenskalaan = multiply(matrixXY, b)
+
+            var getCPenskalaan = multiply(matrixXY, c)
+            // End Calculate
+
+            // Start Pecah
+            var dataAPenskalaanResult = []
+            dataAPenskalaanResult.push(getAPenskalaan[0][0])
+            dataAPenskalaanResult.push(getAPenskalaan[1][0])
+
+            var dataBPenskalaanResult = []
+            dataBPenskalaanResult.push(getBPenskalaan[0][0])
+            dataBPenskalaanResult.push(getBPenskalaan[1][0])
+
+            var dataCPenskalaanResult = []
+            dataCPenskalaanResult.push(getCPenskalaan[0][0])
+            dataCPenskalaanResult.push(getCPenskalaan[1][0])
+            // End Pecah
+
+            var resultPenskalaan = []
+            resultPenskalaan.push(dataAPenskalaanResult)
+            resultPenskalaan.push(dataBPenskalaanResult)
+            resultPenskalaan.push(dataCPenskalaanResult)
+            resultPenskalaan.push(dataAPenskalaanResult)
+
+            generateChartPenskalaan()
+
+            function generateChartPenskalaan(){
+                Highcharts.chart('skala', {
+                    exporting: { enabled: false },
+                    credits: {enabled: false},
+                    title: {text: 'Penskalaan'},
+                    xAxis: {
+                        title: {text: 'X'}
+                    },
+                    yAxis: {
+                        title: {text: 'Y'}
+                    },
+                    series: [{
+                        name: 'A',
+                        data: resultPenskalaan
+                    }],
+                });
+            }
+
+            // End Penskalaan
+
+            // Simulate Rotasi
+            let sin = Math.sin;
+            let cos = Math.cos;
+                
+            // Input Rotasi
+            // arah jarum jam
+            var getStatusArahJJ = document.getElementById("arah_jam").checked //true
+            var nilaiRotasi = Number(document.getElementsByName("n_rotasi")[0].value) //69
+
+            var setSin = []
+            var setSinSecond = []
+            var setCos = []
+
+            if (getStatusArahJJ) {
+                setSin = sin(nilaiRotasi)
+                setSinSecond = sin(-nilaiRotasi)
+                setCos = cos(nilaiRotasi)
+            }else{
+                setSin = sin(-nilaiRotasi)
+                setSinSecond = sin(nilaiRotasi)
+                setCos = cos(-nilaiRotasi)
+            }
+
+            var matrixRotasi = [[setCos, setSin], [setSinSecond, setCos]];
+
+            // getTXY = [[3], [2]];
+
+            // Start Calculate
+            var getARotasi = multiply(matrixRotasi, a)
+
+            var getBRotasi = multiply(matrixRotasi, b)
+
+            var getCRotasi = multiply(matrixRotasi, c)
+            // End Calculate
+
+            // Start Pecah
+            var dataARotasiResult = []
+            dataARotasiResult.push(getARotasi[0][0])
+            dataARotasiResult.push(getARotasi[1][0])
+
+            var dataBRotasiResult = []
+            dataBRotasiResult.push(getBRotasi[0][0])
+            dataBRotasiResult.push(getBRotasi[1][0])
+
+            var dataCRotasiResult = []
+            dataCRotasiResult.push(getCRotasi[0][0])
+            dataCRotasiResult.push(getCRotasi[1][0])
+            // End Pecah
+
+            var resultRotasi = []
+            resultRotasi.push(dataARotasiResult)
+            resultRotasi.push(dataBRotasiResult)
+            resultRotasi.push(dataCRotasiResult)
+            resultRotasi.push(dataARotasiResult)
+
+            generateChartRotasi()
+
+            function generateChartRotasi(){
+                Highcharts.chart('rotasi', {
+                    exporting: { enabled: false },
+                    credits: {enabled: false},
+                    title: {text: 'Rotasi'},
+                    xAxis: {
+                        title: {text: 'X'}
+                    },
+                    yAxis: {
+                        title: {text: 'Y'}
+                    },
+                    series: [{
+                        name: 'A',
+                        data: resultRotasi
+                    }],
+                });
+            }
+            // End Rotasi
+
+            /*
+             * Get from https://stackoverflow.com/a/27205341
+             *
+             */
+
+            function multiply(a, b) {
+                
+                var aNumRows = a.length, aNumCols = a[0].length,
+                    bNumRows = b.length, bNumCols = b[0].length,
+                    m = new Array(aNumRows);
+                
+                for (var r = 0; r < aNumRows; ++r) {
+                    
+                    m[r] = new Array(bNumCols);
+                    
+                    for (var c = 0; c < bNumCols; ++c) {
+                        m[r][c] = 0;
+                        
+                        for (var i = 0; i < aNumCols; ++i) {
+                            m[r][c] += a[r][i] * b[i][c];
+                        }
+
+                    }
+
+                }
+
+                return m;
+            }
+
+            /*
+             * Get from https://stackoverflow.com/a/37984253
+             *
+             */
+
+            function multiplyPlus(a, b) {
+                var getE = math.add(a,b);
+                return getE;
+            }
+
+            // function display(m) {
+            //     for (var r = 0; r < m.length; ++r) {
+            //         document.write('&nbsp;&nbsp;'+m[r].join(' ')+'<br />');
+            //     }
+            // }
+
+        }
+
+    </script>
+
+</body>
+</html>
